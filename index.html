@@ -68,7 +68,12 @@ input,textarea{font:inherit;color:var(--fg)}
   box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--c) 35%,transparent),0 10px 30px -18px color-mix(in oklab,var(--c) 90%,transparent);
   transition:transform .15s ease}
 .tile:active{transform:scale(.98)}
-.tile .count{align-self:flex-end;font-family:var(--mono);font-size:13px;opacity:.75}
+.tile .count{align-self:flex-end;font-family:var(--mono);font-size:13px;opacity:.75;position:relative;z-index:1}
+.tile .label{position:relative;z-index:1}
+.tile .art{position:absolute;left:50%;top:44%;width:60%;max-width:112px;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;transition:transform .35s ease}
+.tile .art svg{width:100%;height:100%;display:block;overflow:visible}
+.tile:hover .art{transform:translate(-50%,-54%) rotate(-3deg)}
+.hscroll .tile .art{width:50%;top:38%}
 .tile .label{font-size:13px}
 .tile.wide{grid-column:1/-1;min-height:140px}
 .tile.outline{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--c)}
@@ -78,7 +83,7 @@ input,textarea{font:inherit;color:var(--fg)}
 
 .hscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;scroll-snap-type:x mandatory}
 .hscroll::-webkit-scrollbar{display:none}
-.hscroll .tile{flex:none;width:150px;min-height:120px;scroll-snap-align:start}
+.hscroll .tile{flex:none;width:156px;min-height:150px;scroll-snap-align:start}
 
 .section-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px}
 .section-h h2{font-size:22px;font-weight:400;letter-spacing:-.02em;margin:0}
@@ -247,6 +252,11 @@ textarea{width:100%;min-height:90px;border-radius:14px;border:1px solid var(--li
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="gl" x1="0.1" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient>
+  <linearGradient id="gls" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/></linearGradient>
+  <filter id="glsh" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity=".14"/></filter>
+</defs></svg>
 <div class="app" id="app"></div>
 
 <div class="tabbar"><nav aria-label="Sections">
@@ -290,6 +300,27 @@ const COLLECTIONS = [
   {id:"rainy",         label:"Rainy day",       c:"do"},
   {id:"free",          label:"Free",            c:"cafe"},
 ];
+// Glassy illustrations for the home blocks (viewBox 0 0 100 100).
+const G = `fill="url(#gl)" stroke="url(#gls)" stroke-width="1.6" stroke-linejoin="round"`;
+const HL = `fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"`;
+const LN = w => `fill="none" stroke="url(#gls)" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"`;
+const macaron = (t) => `<g transform="${t}"><path ${G} d="M22 50a28 14 0 0 1 56 0Z"/><rect ${G} x="20" y="50" width="60" height="7" rx="3.5"/><path ${G} d="M22 57H78A28 12 0 0 1 22 57Z"/><path ${HL} d="M32 44q6-6 16-7"/></g>`;
+const ARTS = {
+  eat:   `<rect ${G} x="12" y="70" width="76" height="8" rx="4"/><path ${G} d="M19 70a31 31 0 0 1 62 0Z"/><circle ${G} cx="50" cy="35" r="5"/><path ${HL} d="M29 62a22 22 0 0 1 13-16"/>`,
+  drink: `<path ${LN(2)} d="M64 12L45 42"/><circle ${G} cx="48" cy="37" r="6.5"/><path ${G} d="M20 26H80L50 58Z"/><rect ${G} x="47.5" y="57" width="5" height="22" rx="2.5"/><ellipse ${G} cx="50" cy="81" rx="17" ry="4.5"/><path ${HL} d="M30 31l12 13"/>`,
+  cafe:  `<path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85" d="M38 36c-4-5 4-8 0-14M50 36c-4-5 4-8 0-14M62 36c-4-5 4-8 0-14"/><ellipse ${G} cx="48" cy="79" rx="34" ry="6.5"/><path ${LN(5)} d="M70 49h5a8 8 0 0 1 0 16h-6"/><path ${G} d="M23 43H71V59a18 17 0 0 1-18 17H41A18 17 0 0 1 23 59Z"/><path ${HL} d="M31 50v8"/>`,
+  pastry:`${macaron("translate(18 -20) scale(.72)")}${macaron("translate(0 10)")}`,
+  shop:  `<path ${LN(4)} d="M38 42V32a12 12 0 0 1 24 0v10"/><path ${G} d="M23 38H77L73 84H27Z"/><path ${HL} d="M31 46l-2 28"/><circle cx="38" cy="46" r="2.4" fill="#fff"/><circle cx="62" cy="46" r="2.4" fill="#fff"/>`,
+  go:    `<rect ${G} x="48.5" y="3" width="3" height="9" rx="1.5"/><path ${G} d="M50 10L54 33L58 50L66 69L77 89H63C61 79 56 75 50 75S39 79 37 89H23L34 69L42 50L46 33Z"/><rect ${G} x="39" y="47" width="22" height="5" rx="2.5"/><rect ${G} x="30" y="67" width="40" height="5" rx="2.5"/><path ${HL} d="M47 22l-3 18"/>`,
+  do:    `<g transform="rotate(-12 50 50)"><path ${G} d="M14 34H86V44a6 6 0 0 0 0 12V66H14V56a6 6 0 0 0 0-12Z"/><path fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="3 4" opacity=".9" d="M64 37V63"/><path ${HL} d="M24 42h26M24 50h18"/></g>`,
+  booked:`<rect ${G} x="32" y="16" width="6" height="16" rx="3"/><rect ${G} x="62" y="16" width="6" height="16" rx="3"/><rect ${G} x="18" y="25" width="64" height="58" rx="12"/><path fill="none" stroke="#fff" stroke-width="2" opacity=".8" d="M18 41H82"/><path fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M37 62l9 9 17-18"/>`,
+  view:  `<path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85" d="M50 20v8M26 30l5 6M74 30l-5 6M16 50h8M84 50h-8"/><path ${G} d="M28 58a22 22 0 0 1 44 0Z"/><rect ${G} x="12" y="60" width="76" height="5" rx="2.5"/><rect ${G} x="24" y="71" width="52" height="5" rx="2.5" opacity=".75"/><rect ${G} x="36" y="82" width="28" height="5" rx="2.5" opacity=".5"/>`,
+  instagram:`<path ${G} d="M36 34l5-8h18l5 8"/><rect ${G} x="14" y="33" width="72" height="47" rx="12"/><circle ${G} cx="50" cy="57" r="14"/><circle fill="none" stroke="#fff" stroke-width="2" opacity=".9" cx="50" cy="57" r="7"/><circle cx="74" cy="43" r="3" fill="#fff"/>`,
+  neighbourhood:`<path ${G} d="M14 82V52L32 36L50 52V82Z"/><path ${G} d="M46 82V44L66 26L86 44V82Z"/><rect fill="#fff" opacity=".9" x="26" y="58" width="12" height="11" rx="2"/><rect fill="#fff" opacity=".9" x="60" y="50" width="12" height="11" rx="2"/><rect fill="#fff" opacity=".9" x="60" y="66" width="12" height="16" rx="2"/>`,
+  rainy: `<path ${LN(4)} d="M50 50V77a6 6 0 0 1-12 0"/><path ${G} d="M13 52a37 31 0 0 1 74 0c-6-5-12-5-18.5 0c-6-5-12-5-18.5 0c-6-5-12-5-18.5 0c-6-5-12-5-18.5 0Z"/><path ${HL} d="M25 40q8-12 22-14"/><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7" d="M22 64l-3 7M78 64l-3 7M70 78l-3 7"/>`,
+  free:  `<path ${G} d="M50 82C20 62 15 45 23 34c8-10 22-9 27 3c5-12 19-13 27-3c8 11 3 28-27 48Z"/><path ${HL} d="M30 38q5-5 11-3"/>`,
+};
+const art = k => ARTS[k] ? `<span class="art" aria-hidden="true"><svg viewBox="0 0 100 100"><g filter="url(#glsh)">${ARTS[k]}</g></svg></span>` : "";
 const catColor = c => `var(--${CATS[c] ? c : "eat"})`;
 const PARIS = {lat:48.8566, lng:2.3522};
 const DAYKEYS = ["sun","mon","tue","wed","thu","fri","sat"];
@@ -547,7 +578,7 @@ function viewHome(){
   const up = nextUp().find(e => e.kind === "event");
   const toBook = PLACES.filter(isToBook);
   const total = PLACES.filter(p => p.status !== "skip").length, done = PLACES.filter(p => visited.has(p.id)).length;
-  const tiles = Object.entries(CATS).map(([k,v]) => `<button class="tile" style="--c:${catColor(k)}" data-cat="${k}"><span class="count">${PLACES.filter(p=>p.cat===k).length}</span><span class="label">${v.label}</span></button>`).join("");
+  const tiles = Object.entries(CATS).map(([k,v]) => `<button class="tile" style="--c:${catColor(k)}" data-cat="${k}">${art(k)}<span class="count">${PLACES.filter(p=>p.cat===k).length}</span><span class="label">${v.label}</span></button>`).join("");
   const bookedN = EVENTS.filter(e=>e.booked).length + bookedByUs.size;
   return header(TRIP.title || "Paris") + tripCard() + hotelCard() + `
     <div class="section-h"><h2>Next up</h2></div>
@@ -558,10 +589,10 @@ function viewHome(){
     </div>` : ""}
     <div class="section-h"><h2>Explore</h2><span class="eyebrow">${PLACES.length} places</span></div>
     <div class="grid">${tiles}
-      <button class="tile outline" style="--c:var(--booked)" data-goto="cal"><span class="count">${bookedN}</span><span class="label">Booked</span></button>
+      <button class="tile" style="--c:var(--muted)" data-goto="cal">${art("booked")}<span class="count">${bookedN}</span><span class="label">Booked</span></button>
     </div>
     <div class="section-h"><h2>Lists</h2></div>
-    <div class="hscroll">${COLLECTIONS.map(c => `<button class="tile" style="--c:var(--${c.c})" data-coll="${c.id}"><span class="count">${PLACES.filter(p=>has(p,c.id)).length}</span><span class="label">${esc(c.label)}</span></button>`).join("")}</div>
+    <div class="hscroll">${COLLECTIONS.map(c => `<button class="tile" style="--c:var(--${c.c})" data-coll="${c.id}">${art(c.id)}<span class="count">${PLACES.filter(p=>has(p,c.id)).length}</span><span class="label">${esc(c.label)}</span></button>`).join("")}</div>
     <div class="section-h"><h2>Bucket list</h2></div>
     <div class="card">
       <div class="progress-row"><strong>${done} <span class="muted" style="font-size:18px">of ${total}</span></strong><span class="eyebrow">${total ? Math.round(done/total*100) : 0}% visited</span></div>

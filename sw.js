@@ -1,6 +1,6 @@
 // Offline support: the app, its data, fonts and the Leaflet library are kept on the phone.
 // Map tiles you've already looked at are kept too; new areas need internet.
-const APP = "paris-app-v1";
+const APP = "paris-app-v2";
 const TILES = "paris-tiles-v1";
 const SHELL = ["./", "index.html", "data.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-180.png",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
