@@ -70,10 +70,16 @@ input,textarea{font:inherit;color:var(--fg)}
 .tile:active{transform:scale(.98)}
 .tile .count{align-self:flex-end;font-family:var(--mono);font-size:13px;opacity:.75;position:relative;z-index:1}
 .tile .label{position:relative;z-index:1}
-.tile .art{position:absolute;left:50%;top:44%;width:60%;max-width:112px;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;transition:transform .35s ease}
+.tile .art{position:absolute;right:-9%;bottom:-11%;width:66%;max-width:132px;aspect-ratio:1;transform:rotate(-10deg);opacity:.62;pointer-events:none;transition:transform .4s ease,opacity .4s ease}
 .tile .art svg{width:100%;height:100%;display:block;overflow:visible}
-.tile:hover .art{transform:translate(-50%,-54%) rotate(-3deg)}
-.hscroll .tile .art{width:50%;top:38%}
+.tile:hover .art{transform:rotate(-5deg) translateY(-4px);opacity:.75}
+.hscroll .tile .art{width:64%;right:-12%;bottom:-12%}
+/* light theme: glass needs a tinted edge to read on the pale bottom of the block */
+.tile .art svg{filter:drop-shadow(0 1px 0 color-mix(in oklab,var(--c),#000 22%)) drop-shadow(0 8px 14px color-mix(in oklab,var(--c) 70%,transparent))}
+.tile .art{opacity:.85}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tile .art svg{filter:none}:root:not([data-theme="light"]) .tile .art{opacity:.62}}
+:root[data-theme="dark"] .tile .art svg{filter:none}
+:root[data-theme="dark"] .tile .art{opacity:.62}
 .tile .label{font-size:13px}
 .tile.wide{grid-column:1/-1;min-height:140px}
 .tile.outline{background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--c)}
@@ -253,9 +259,9 @@ textarea{width:100%;min-height:90px;border-radius:14px;border:1px solid var(--li
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
-  <linearGradient id="gl" x1="0.1" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity=".22"/></linearGradient>
-  <linearGradient id="gls" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/></linearGradient>
-  <filter id="glsh" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity=".14"/></filter>
+  <linearGradient id="gl" x1="0.1" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".8"/><stop offset=".5" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/></linearGradient>
+  <linearGradient id="gls" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></linearGradient>
+  <filter id="glsh" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".08"/></filter>
 </defs></svg>
 <div class="app" id="app"></div>
 
