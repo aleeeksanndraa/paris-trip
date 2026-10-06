@@ -1,6 +1,6 @@
 // Offline support: the app, its data, fonts and the Leaflet library are kept on the phone.
 // Map tiles you've already looked at are kept too; new areas need internet.
-const APP = "paris-app-v5";
+const APP = "paris-app-v7";
 const TILES = "paris-tiles-v1";
 const SHELL = ["./", "index.html", "data.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-180.png",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
@@ -20,7 +20,7 @@ self.addEventListener("fetch", e => {
 
   // App files: try the network first so updates arrive, fall back to the saved copy.
   if (url.origin === location.origin) {
-    e.respondWith(fetch(req).then(res => {
+    e.respondWith(fetch(req, {cache: "no-cache"}).then(res => {
       const copy = res.clone(); caches.open(APP).then(c => c.put(req, copy)); return res;
     }).catch(() => caches.match(req).then(r => r || caches.match("index.html"))));
     return;

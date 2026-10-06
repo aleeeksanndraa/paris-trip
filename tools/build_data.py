@@ -80,7 +80,8 @@ add("le-perchoir","Le Perchoir Ménilmontant","drink","Belleville","14 Rue Cresp
     bestTime="Sunset", tags=["rooftop","view","cocktails","instagram"])
 add("les-ombres","Les Ombres","drink","Eiffel Tower & Trocadéro","27 Quai Branly, 75007 Paris",48.8610,2.2975,
     "Rooftop restaurant and bar on the Musée du quai Branly, directly facing the Eiffel Tower. Book for dinner.",
-    bestTime="After dark, when the tower sparkles on the hour", tags=["rooftop","view","instagram"])
+    bestTime="After dark, when the tower sparkles on the hour", bookAhead="Book a table if you want dinner. Drinks at the bar may not need a booking.",
+    tags=["rooftop","view","instagram","to book"])
 add("terrass-hotel","Terrass'' Hôtel rooftop","drink","Montmartre","12 Rue Joseph de Maistre, 75018 Paris",48.8866,2.3326,
     "Rooftop bar on top of a Montmartre hotel with a view over Paris to the Eiffel Tower.", bestTime="Sunset", tags=["rooftop","view","cocktails"])
 add("baron-rouge","Le Baron Rouge","drink","Bastille & Gare de Lyon","1 Rue Théophile Roussel, 75012 Paris",48.8494,2.3779,
@@ -213,16 +214,17 @@ add("galerie-dior","La Galerie Dior","go","Champs-Élysées","11 Rue François 1
 add("louvre","Louvre","go","Louvre & Tuileries","Rue de Rivoli, 75001 Paris",48.8611,2.3358,
     "To book. Date not chosen yet.", hours="9:00 – 18:00, Wed and Fri until 21:00. Closed Tuesdays.",
     open="09:00-18:00", openOn={"wed":"09:00-21:00","fri":"09:00-21:00"}, closed=["tue"],
-    bookingUrl="https://www.louvre.fr", bookAhead="Book a timed ticket online. Popular slots sell out days ahead.",
+    bookingUrl="https://www.louvre.fr", bookAhead="Book the 9:00 slot on Thursday 29 Oct. Popular slots sell out days ahead.",
     tags=["museum","landmark","to book","rainy"])
 add("versailles","Palace of Versailles","go","Versailles (day trip)","Place d'Armes, 78000 Versailles",48.8049,2.1204,
     "To book. Date not chosen yet. Plan for most of a day.", hours="Closed Mondays", closed=["mon"],
-    bookingUrl="https://www.chateauversailles.fr", bookAhead="Book a timed ticket online and go early.",
+    bookingUrl="https://www.chateauversailles.fr", bookAhead="Free on Sunday 1 Nov (first Sunday of the month), but a time slot must be reserved online. Morning slots go fast.",
     tags=["landmark","day trip","to book"])
 add("orsay","Musée d'Orsay","go","Saint-Germain","Esplanade Valéry Giscard d'Estaing, 75007 Paris",48.8600,2.3266,
     "Impressionists in a former railway station. Don't miss the giant clock window on the 5th floor, looking over the Seine to Sacré-Cœur.",
     hours="9:30 – 18:00, Thu until 21:45. Closed Mondays.", open="09:30-18:00", openOn={"thu":"09:30-21:45"}, closed=["mon"],
-    bestTime="Thursday evening is quieter", status="maybe", tags=["museum","view","instagram","rainy"])
+    bestTime="Thursday evening is quieter", bookingUrl="https://www.musee-orsay.fr", bookAhead="Buy tickets online (€16) to skip the ticket queue.",
+    tags=["museum","view","instagram","rainy","to book"])
 add("eiffel-tower","Eiffel Tower","go","Eiffel Tower & Trocadéro","Champ de Mars, 5 Avenue Anatole France, 75007 Paris",48.8584,2.2945,
     "The view from the top is the classic one.", bestTime="After dark it sparkles for 5 minutes every hour on the hour",
     bookingUrl="https://www.toureiffel.paris", bookAhead="Book summit tickets on the official site. They sell out.",
@@ -246,7 +248,7 @@ add("notre-dame","Notre-Dame","go","Île de la Cité","6 Parvis Notre-Dame, 7500
     "Reopened after the restoration. Entry is free. Other sites selling tickets are not official.",
     hours="Weekdays 7:50–19:00 (Thu until 22:00), weekends 8:15–19:30",
     open="07:50-19:00", openOn={"thu":"07:50-22:00","sat":"08:15-19:30","sun":"08:15-19:30"},
-    bookingUrl="https://www.notredamedeparis.fr", bookAhead="Free time-slot reservation opens 48 hours ahead. Only use notredamedeparis.fr.",
+    bookingUrl="https://www.notredamedeparis.fr", bookAhead="Free. Reserve the Thursday 29 Oct evening slot from Tuesday 27 Oct (slots open 48 hours ahead). Only use notredamedeparis.fr.",
     tags=["church","free","landmark","to book","rainy"])
 add("sainte-chapelle","Sainte-Chapelle","go","Île de la Cité","10 Boulevard du Palais, 75001 Paris",48.8554,2.3450,
     "Chapel with floor-to-ceiling stained glass.", bestTime="A sunny day, when the light comes through the glass",
@@ -436,7 +438,7 @@ PRICE = {
   # sights (2026 entry, adult)
   "galerie-dior":"€16 full price · €12 reduced (ages 10–26, students)","louvre":"€22 for EU visitors · €32 for non-EU visitors",
   "orsay":"€16 online · €14 on site · €12 on Thursday evenings · free for EU residents aged 18–25",
-  "versailles":"Palace ticket €21 · Passport (whole estate) €35 until 31 Oct, €25 from 1 Nov","sainte-chapelle":"€22","arc-de-triomphe":"€22",
+  "versailles":"Free on Sunday 1 Nov (first Sunday of the month, reservation required) · otherwise Palace ticket €21","sainte-chapelle":"€22","arc-de-triomphe":"€22",
   "orangerie":"€11","invalides":"€17","seine-cruise":"From €17","eiffel-tower":"See the official site",
 }
 for p in P:
@@ -562,11 +564,11 @@ INFO = {
 }
 
 DAY_NOTES = {
-  "2026-10-28": "Arrival day: train arrives at Gare du Nord at 11:43. Idea for lunch: Bouillon Chartier Gare de l'Est is a short walk from the station. The Louvre is open until 21:00 tonight.",
-  "2026-10-29": "Thursday. Musée d'Orsay is open until 21:45 and Notre-Dame until 22:00, good for an evening visit.",
-  "2026-10-30": "Friday. Dior exhibition at 12:30. The Louvre is open until 21:00.",
-  "2026-10-31": "Saturday. Busiest day at museums and shops. L'As du Fallafel is closed. The Saint-Ouen flea market is open.",
-  "2026-11-01": "Sunday and a public holiday (All Saints' Day). Many shops and some bakeries are closed; most museums and sights stay open. The Saint-Ouen flea market is open.",
+  "2026-10-28": "Arrival day: train arrives at Gare du Nord at 11:43. Idea for lunch: Bouillon Chartier Gare de l'Est is a short walk from the station. Evening: Eiffel Tower views.",
+  "2026-10-29": "Museum day: Louvre, Musée d'Orsay, then Notre-Dame in the evening. Idea for lunch between the two museums: Little Tokyo (ramen and udon) is 10 minutes from the Louvre.",
+  "2026-10-30": "Dior at 12:30 (entry within 30 minutes of the slot, no big bags), then a long walk to the Luxembourg Garden.",
+  "2026-10-31": "Free day, nothing planned yet. Saturday is the busiest day at museums and shops. L'As du Fallafel is closed. The Saint-Ouen flea market is open.",
+  "2026-11-01": "Versailles day. Sunday and a public holiday (All Saints' Day), so many shops in Paris are closed.",
   "2026-11-02": "Departure day: train leaves Gare du Nord at 18:15. Ask the hotel to keep your bags after check-out. Musée d'Orsay, Versailles, Musée Yves Saint Laurent and the Marché des Enfants Rouges are closed on Mondays.",
 }
 
@@ -592,6 +594,72 @@ const PLACES = [{"".join(chr(10) + b for b in body)}
 
 // Planned and booked things, shown in the calendar.
 const EVENTS = [
+  {{
+    id: "plan-trocadero",
+    date: "2026-10-28",
+    start: "17:00",
+    title: "Eiffel Tower view at Trocadéro",
+    placeId: "trocadero",
+    booked: false,
+    notes: "Sunset is at 17:38. The classic photo spot for the Eiffel Tower.",
+  }},
+  {{
+    id: "plan-les-ombres",
+    date: "2026-10-28",
+    start: "19:00",
+    title: "Drinks with an Eiffel Tower view",
+    placeId: "les-ombres",
+    booked: false,
+    notes: "Rooftop bar on the Musée du quai Branly, facing the tower, 10 minutes' walk from Trocadéro. The tower sparkles for 5 minutes at 20:00, 21:00 and 22:00. Book a table for dinner.",
+  }},
+  {{
+    id: "plan-louvre",
+    date: "2026-10-29",
+    start: "09:00",
+    end: "12:30",
+    title: "Louvre",
+    placeId: "louvre",
+    booked: false,
+    notes: "Book the 9:00 time slot on louvre.fr. Mornings right at opening are the calmest.",
+  }},
+  {{
+    id: "plan-orsay",
+    date: "2026-10-29",
+    start: "14:00",
+    end: "17:30",
+    title: "Musée d'Orsay",
+    placeId: "orsay",
+    booked: false,
+    notes: "10 minutes' walk from the Louvre across the Pont Royal. Open until 21:45 on Thursdays, so there's no rush. Tickets are €16 online.",
+  }},
+  {{
+    id: "plan-notre-dame",
+    date: "2026-10-29",
+    start: "19:00",
+    title: "Notre-Dame",
+    placeId: "notre-dame",
+    booked: false,
+    notes: "25 minutes' walk along the Seine from Orsay. Open until 22:00 on Thursdays, and evenings after 19:00 are the quietest. Reserve the free time slot on notredamedeparis.fr from Tuesday 27 Oct (slots open 48 hours ahead).",
+  }},
+  {{
+    id: "plan-walk-luxembourg",
+    date: "2026-10-30",
+    start: "14:00",
+    title: "Walk to the Luxembourg Garden",
+    placeId: "luxembourg",
+    booked: false,
+    notes: "About 50 minutes on foot from the Dior gallery: cross Pont Alexandre III, pass Les Invalides, then go through Saint-Germain (Café de Flore and Pierre Hermé are on the way). The garden closes around 17:00 at this time of year.",
+  }},
+  {{
+    id: "plan-versailles",
+    date: "2026-11-01",
+    start: "09:00",
+    end: "17:30",
+    title: "Versailles, whole day",
+    placeId: "versailles",
+    booked: false,
+    notes: "Free entry: it's the first Sunday of the month, but you must reserve a time slot on chateauversailles.fr. Morning slots go fast. Take the RER C to Versailles Château Rive Gauche (about 40 minutes, one regular ticket each way). The palace closes at 17:30.",
+  }},
   {{
     id: "train-to-paris",
     date: "2026-10-28",

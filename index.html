@@ -401,7 +401,9 @@ function locate(cb){
     {enableHighAccuracy:true, timeout:12000, maximumAge:60000}
   );
 }
-const isToBook = p => has(p,"to book") && !bookedByUs.has(p.id) && !EVENTS.some(e => e.placeId === p.id && e.booked);
+// Reminders only for things that are in our plan and still need a reservation.
+const isToBook = p => has(p,"to book") && !bookedByUs.has(p.id) && !EVENTS.some(e => e.placeId === p.id && e.booked)
+  && EVENTS.some(e => e.placeId === p.id && !e.booked);
 const isBooked = p => bookedByUs.has(p.id) || EVENTS.some(e => e.placeId === p.id && e.booked);
 
 /* ---------- opening hours ---------- */
@@ -639,7 +641,7 @@ function eventTile(e, wide){
   return `<button class="tile ${wide?"wide":""} ${p?"":"outline"}" style="--c:${c}" data-event="${esc(e.id)}">
     <div class="tiletop">
       <span class="label">${esc(fmtDay(e.date,{weekday:"short",day:"numeric",month:"short"}))}${e.start?" · "+esc(e.start):""}${e.end?" → "+esc(e.end):""}</span>
-      ${e.booked ? `<span class="chip booked">Booked</span>` : `<span class="chip">Planned</span>`}
+      ${e.booked ? `<span class="chip booked">Booked</span>` : p && bookedByUs.has(p.id) ? `<span class="chip booked">Booked</span>` : p && isToBook(p) ? `<span class="chip">To book</span>` : `<span class="chip">Planned</span>`}
     </div>
     <div><div class="big">${esc(e.title)}</div>${p ? `<div class="sub">${esc(p.area || p.address || "")}</div>` : e.where ? `<div class="sub">${esc(e.where)}</div>` : ""}</div>
   </button>`;
