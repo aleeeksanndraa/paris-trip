@@ -310,6 +310,139 @@ add("moulin-rouge-show","Moulin Rouge show","do","Pigalle & Rue des Martyrs","82
     "The classic cabaret show.", bookingUrl="https://www.moulinrouge.fr", bookAhead="Book online well ahead. Evening shows sell out.",
     status="maybe", tags=["evening","to book"])
 
+
+# ───────── manual hour fixes (OSM has seasonal rules the app can't read) ─────────
+FIX = {
+  "eiffel-tower":   dict(open="09:30-23:45", hours="9:30 – 23:45 every day"),
+  "arc-de-triomphe":dict(open="10:00-22:30", hours="10:00 – 22:30 every day"),
+  "sainte-chapelle":dict(open="09:00-17:00", hours="9:00 – 17:00 every day (October to March)"),
+  "versailles":     dict(open="09:00-17:30", closed=["mon"], hours="9:00 – 18:30 until 31 Oct, 9:00 – 17:30 from 1 Nov. Closed Mondays."),
+  "sacre-coeur":    dict(open="06:00-22:30", hours="6:00 – 22:30 every day"),
+}
+for p in P:
+    if p["id"] in FIX: p.update(FIX[p["id"]])
+
+# ───────── opening hours from OpenStreetMap (tools/fetch_hours.py) ─────────
+import re as _re
+OSM_SKIP = {  # wrong venue matched, or seasonal rules: keep our own info
+  "chartier-montparnasse","bouillon-pigalle","kunitoraya","kitsune-palais-royal","du-pain-et-des-idees","palais-royal",
+  "rue-cremieux","little-tokyo","belleville","luxembourg","le-perchoir","frenchie-bar-a-vins","moulin-rouge",
+  "pont-alexandre-iii","mille-et-un","citypharma","eiffel-tower","arc-de-triomphe","sainte-chapelle","versailles",
+  "sacre-coeur","louvre","orsay","notre-dame","galerie-dior","orangerie","maison-caillau",
+}
+DK = ["mo","tu","we","th","fr","sa","su"]; DKEY = ["mon","tue","wed","thu","fri","sat","sun"]
+DNAME = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+def parse_oh(oh):
+    s = oh.strip()
+    if s == "24/7": return {d: "00:00-24:00" for d in DKEY}, []
+    s = _re.sub(r"\b(Mo|Tu|We|Th|Fr|Sa|Su),\s+(?=(Mo|Tu|We|Th|Fr|Sa|Su)\b)", r"\1,", s)
+    rules = []
+    for part in s.split(";"):
+        rules += [r.strip() for r in _re.split(r",\s+(?=(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?(?:,(?:Mo|Tu|We|Th|Fr|Sa|Su))*\s+\d)", part) if r.strip()]
+    days = {}
+    for r in rules:
+        if r.startswith("PH") or r.startswith("SH"): continue   # holiday-only rules
+        r = _re.sub(r",?\s*PH\b", "", r).strip()
+        if not r or _re.search(r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|20\d\d)\b", r): continue
+        m = _re.match(r"^((?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?(?:,(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)?\s*(.*)$", r)
+        spec, times = m.group(1), m.group(2).strip()
+        sel = []
+        if not spec: sel = list(range(7))
+        else:
+            for item in spec.split(","):
+                if "-" in item:
+                    a, b = DK.index(item[:2].lower()), DK.index(item[3:5].lower())
+                    i = a
+                    while True:
+                        sel.append(i)
+                        if i == b: break
+                        i = (i + 1) % 7
+                else: sel.append(DK.index(item.lower()))
+        if times in ("off", "closed"): val = None
+        else:
+            rng = []
+            for t in times.split(","):
+                t = t.strip()
+                mm = _re.match(r"^(\d\d):(\d\d)-(\d\d):(\d\d)$", t)
+                if not mm: return None
+                end = t[6:]
+                if end == "00:00": end = "24:00"
+                rng.append(t[:5] + "-" + end)
+            if not rng: return None
+            val = ",".join(rng)
+        for i in sel: days[DKEY[i]] = val
+    if not days: return None
+    openOn = {k: v for k, v in days.items() if v}
+    closed = [k for k, v in days.items() if v is None]
+    return openOn, closed
+
+def hours_text(openOn, closed):
+    vals = []
+    for k in DKEY:
+        vals.append(openOn.get(k) if k in openOn else ("closed" if k in closed else None))
+    out, i = [], 0
+    while i < 7:
+        j = i
+        while j + 1 < 7 and vals[j + 1] == vals[i]: j += 1
+        if vals[i] is not None:
+            label = DNAME[i] if i == j else f"{DNAME[i]}–{DNAME[j]}"
+            v = "closed" if vals[i] == "closed" else vals[i].replace("-", " – ").replace(",", ", ").replace("24:00", "midnight")
+            out.append(f"{label} {v}")
+        i = j + 1
+    if len(out) == 1 and out[0] == "Mon–Sun 00:00 – midnight": return "Open 24 hours"
+    if len(out) == 1 and out[0].startswith("Mon–Sun "): return "Every day " + out[0][8:]
+    return " · ".join(out)
+
+OSM_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "osm_hours.json")
+osm = json.load(open(OSM_PATH)) if os.path.exists(OSM_PATH) else {}
+for p in P:
+    r = osm.get(p["id"])
+    if not r or p["id"] in OSM_SKIP or "open" in p: continue
+    parsed = parse_oh(r["opening_hours"])
+    if not parsed: continue
+    openOn, closed = parsed
+    closed = sorted(set(closed) | set(c for c in p.get("closed", []) if c not in openOn), key=DKEY.index)
+    if openOn: p["openOn"] = openOn
+    if closed: p["closed"] = closed
+    elif "closed" in p: del p["closed"]
+    p["hours"] = hours_text(openOn, closed)
+    p["hoursSource"] = "osm"
+
+# ───────── average bill / entry price ─────────
+PRICE = {
+  # eat (per person, main + drink)
+  "chartier-grands-boulevards":"€20–30 per person","chartier-montparnasse":"€20–30 per person","chartier-gare-de-lest":"€20–30 per person",
+  "les-philosophes":"€30–45 per person","bistrot-paul-bert":"€60–80 per person","fontaine-de-mars":"€50–70 per person",
+  "relais-entrecote":"€35–45 per person","au-pied-de-cochon":"€40–60 per person","bouillon-julien":"€20–30 per person",
+  "bouillon-pigalle":"€20–30 per person","train-bleu":"€70–100 per person","breizh-cafe":"€20–30 per person",
+  "as-du-fallafel":"€10–15 per person","pink-mamma":"€30–45 per person","higuma":"€12–18 per person","kunitoraya":"€20–30 per person",
+  "sanukiya":"€15–22 per person","dosanko-larmen":"€15–20 per person","pho-14":"€12–18 per person","dong-huong":"€12–18 per person",
+  # drink
+  "little-red-door":"€16–18 per cocktail","le-syndicat":"€14–16 per cocktail","candelaria":"€14–16 per cocktail","danico":"€16–18 per cocktail",
+  "bar-hemingway":"€30–40 per cocktail","harrys-bar":"€15–20 per cocktail","le-perchoir":"€14–18 per cocktail","les-ombres":"€18–22 per cocktail",
+  "terrass-hotel":"€16–20 per cocktail","baron-rouge":"€4–7 per glass of wine","frenchie-bar-a-vins":"€8–14 per glass of wine",
+  # cafés (drink + something small)
+  "cafe-de-flore":"€10–18 per person","deux-magots":"€10–18 per person","maison-rose":"€15–25 per person","le-consulat":"€15–25 per person",
+  "deux-moulins":"€15–25 per person","angelina":"€15–25 per person","kitsune-palais-royal":"€5–10 per person","cafe-marly":"€20–40 per person",
+  "boot-cafe":"€5–10 per person","ob-la-di":"€8–15 per person","cafeotheque":"€4–8 per person","shakespeare-cafe":"€5–10 per person",
+  "carette":"€15–25 per person","laduree-champs":"€15–30 per person",
+  # pastry
+  "pierre-herme-bonaparte":"€2.50–3.50 per macaron · €8–10 per pastry","laduree-royale":"€2.50–3.50 per macaron · €8–10 per pastry",
+  "carette-vosges":"€2.50–3.50 per macaron · €15–25 sitting down","dalloyau":"€2.50–3.50 per macaron · €7–10 per cake",
+  "stohrer":"€5–8 per pastry","fou-de-patisserie":"€6–12 per pastry","cedric-grolet-opera":"€15–20 per pastry","ritz-comptoir":"€4–8 per item",
+  "eclair-de-genie":"€6–9 per éclair","jacques-genin":"€10–15 for the millefeuille","sebastien-gaudard":"€6–9 per pastry","mamiche":"€3–6 per item",
+  "odette":"€2–4 per cream puff","aki-boulangerie":"€3–8 per item","du-pain-et-des-idees":"€4–6 per pastry","la-parisienne":"€1.50–2.50 per croissant",
+  "mille-et-un":"€1.50–2.50 per croissant","rabineau":"€1.50–2.50 per croissant","utopie":"€1.50–6 per item",
+  # sights (2026 entry, adult)
+  "galerie-dior":"€16 full price · €12 reduced (ages 10–26, students)","louvre":"€22 for EU visitors · €32 for non-EU visitors",
+  "orsay":"€16 online · €14 on site · €12 on Thursday evenings · free for EU residents aged 18–25",
+  "versailles":"Palace ticket €21 · Passport (whole estate) €35 until 31 Oct, €25 from 1 Nov","sainte-chapelle":"€22","arc-de-triomphe":"€22",
+  "orangerie":"€11","invalides":"€17","seine-cruise":"From €17","eiffel-tower":"See the official site",
+}
+for p in P:
+    if p["id"] in PRICE: p["price"] = PRICE[p["id"]]
+    elif "free" in p["tags"] and p["cat"] in ("go","do"): p["price"] = "Free"
+
 # Rebuild data.js:  python3 tools/build_data.py   (add --geo to look up new addresses on OpenStreetMap)
 # ───────── geocode (OpenStreetMap Nominatim) ─────────
 def geocode(q):
@@ -350,7 +483,7 @@ ids = [p["id"] for p in P]; assert len(ids) == len(set(ids)), "duplicate ids"
 def js(v):
     return json.dumps(v, ensure_ascii=False)
 
-ORDER = ["id","name","cat","area","address","lat","lng","order","drinks","notes","bestTime","hours","open","openOn","closed","bookingUrl","bookAhead","price","link","status","tags"]
+ORDER = ["id","name","cat","area","address","lat","lng","price","order","drinks","notes","bestTime","hours","hoursSource","open","openOn","closed","bookingUrl","bookAhead","price","link","status","tags"]
 def place_js(p):
     lines = []
     for k in ORDER:
@@ -503,7 +636,7 @@ const EVENTS = [
     placeId: "galerie-dior",
     booked: true,
     confirmation: "",
-    notes: "",
+    notes: "3 tickets. Open them under Plan → Our tickets on your phone. Entry is guaranteed within 30 minutes of your time slot. No large bags or suitcases allowed inside.",
   }},
 ];
 

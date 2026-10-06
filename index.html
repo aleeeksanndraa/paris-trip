@@ -208,12 +208,14 @@ input,textarea{font:inherit;color:var(--fg)}
 .tabbar button[aria-current="page"]{background:var(--fg);color:var(--bg)}
 
 /* sheet */
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1000;opacity:0;transition:opacity .2s}
+.scrim{position:fixed;inset:-120px 0;background:rgba(0,0,0,.35);z-index:1000;opacity:0;transition:opacity .2s}
 .scrim.show{opacity:1}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:1001;max-width:520px;margin:0 auto;max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);border-radius:30px 30px 0 0;transform:translateY(100%);transition:transform .25s ease;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 28px)}
+.sheet{--c:var(--muted);position:fixed;left:0;right:0;bottom:0;z-index:1001;max-width:520px;margin:0 auto;max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;border-radius:30px 30px 0 0;
+  background:linear-gradient(180deg,color-mix(in oklab,var(--c) 80%,var(--bg)) 0,color-mix(in oklab,var(--c) 40%,var(--bg)) 150px,var(--bg) 300px) local,var(--bg);
+  box-shadow:0 360px 0 0 var(--bg);transform:translateY(100%);transition:transform .25s ease;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 28px)}
 .sheet.show{transform:none}
-.sheet .hero{--c:var(--eat);padding:12px 20px 22px;background:radial-gradient(130% 100% at 50% 0%,var(--c),color-mix(in oklab,var(--c) 35%,var(--bg)) 60%,var(--bg))}
-.grab{width:40px;height:5px;border-radius:9px;background:var(--fg);opacity:.25;margin:0 auto 14px}
+.sheet .hero{padding:2px 20px 22px}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--fg);opacity:.25;margin:10px auto 14px}
 .sheet h3{font-size:32px;font-weight:400;letter-spacing:-.03em;line-height:1.1;margin:6px 0 6px;text-wrap:balance}
 .sheet .content{padding:0 20px;display:flex;flex-direction:column;gap:18px}
 .heromet{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
@@ -247,6 +249,17 @@ textarea{width:100%;min-height:90px;border-radius:14px;border:1px solid var(--li
 .viewer img{max-width:100%;max-height:75vh;border-radius:16px}
 .viewer .vbtns{display:flex;gap:10px}
 .viewer .btn{background:#222;color:#fff;border-color:#333}
+.viewer.light{background:#fff;overflow:auto;justify-content:flex-start}
+.viewer.light img{max-height:none;border-radius:0;max-width:none;width:100%;display:block}
+.vscroll{width:100%;flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+.viewer.light .btn{background:#111;color:#fff;border-color:#111}
+.pinput{height:56px;border-radius:14px;border:1px solid var(--line);background:var(--bg);padding:0 16px;font-size:24px;letter-spacing:.35em;text-align:center;width:100%}
+.tk-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:14px}
+.tk-actions label{cursor:pointer}
+.tk .prev{display:block;width:100%;aspect-ratio:1.5;overflow:hidden;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.tk .prev img{width:100%;height:100%;object-fit:cover;object-position:top}
+.tk-row{display:flex;gap:10px;align-items:center}
+.tk-row input{flex:1;min-width:0;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:0 12px;font-size:15px}
 
 .menu{position:fixed;right:max(16px,calc(50% - 244px));top:calc(env(safe-area-inset-top,0px) + 70px);z-index:950;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:6px;min-width:220px;box-shadow:0 20px 40px -20px rgba(0,0,0,.4)}
 .menu button{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:12px}
@@ -394,15 +407,27 @@ const isBooked = p => bookedByUs.has(p.id) || EVENTS.some(e => e.placeId === p.i
 /* ---------- opening hours ---------- */
 // p.open: "09:00-18:00" (daily), p.openOn: {wed:"09:00-21:00"}, p.closed: ["tue"]
 const toMin = s => { const [h,m] = s.split(":").map(Number); return h*60+m; };
+function rangesFor(p, day){
+  if((p.closed||[]).includes(day)) return [];
+  const r = (p.openOn && p.openOn[day]) || (p.openOn && Object.keys(p.openOn).length && !p.open ? null : p.open);
+  if(!r) return null;
+  return r.split(",").map(x => { const [a,b] = x.split("-"); const s = toMin(a); let e = toMin(b); if(e <= s) e += 1440; return {a, b, s, e}; });
+}
+const endLabel = b => (b === "24:00" || b === "00:00") ? "midnight" : b;
 function openStatus(p){
   if(!p.open && !p.closed && !p.openOn) return null;
   const {day, mins} = parisNow();
-  if((p.closed||[]).includes(day)) return {open:false, label:"Closed today"};
-  const range = (p.openOn && p.openOn[day]) || p.open;
-  if(!range) return {open:null, label:"Open today"};
-  const [a,b] = range.split("-"); const s = toMin(a); let e = toMin(b); if(e <= s) e += 1440;
-  if(mins >= s && mins < e) return {open:true, label:`Open · until ${b === "24:00" ? "midnight" : b}`};
-  return {open:false, label: mins < s ? `Opens ${a}` : "Closed now"};
+  const prev = DAYKEYS[(DAYKEYS.indexOf(day) + 6) % 7];
+  for(const r of rangesFor(p, prev) || []) if(r.e > 1440 && mins < r.e - 1440) return {open:true, label:`Open · until ${endLabel(r.b)}`};
+  const rs = rangesFor(p, day);
+  if(rs === null) return (p.closed||[]).length ? {open:null, label:"Open today"} : null;
+  if(!rs.length) return {open:false, label:"Closed today"};
+  for(const r of rs){
+    if(r.s === 0 && r.e === 1440) return {open:true, label:"Open 24 hours"};
+    if(mins >= r.s && mins < r.e) return {open:true, label:`Open · until ${endLabel(r.b)}`};
+  }
+  const next = rs.find(r => mins < r.s);
+  return {open:false, label: next ? `Opens ${next.a}` : "Closed now"};
 }
 function statusChip(p){
   const st = openStatus(p); if(!st) return "";
@@ -483,6 +508,92 @@ async function renderPhotos(placeId){
     + `<label for="ph-${esc(placeId)}">+ Add photo</label><input id="ph-${esc(placeId)}" data-addphoto="${esc(placeId)}" type="file" accept="image/*" hidden>`;
 }
 
+/* ---------- tickets (IndexedDB, this phone only, PIN-locked) ---------- */
+const ticketDB = (() => {
+  let dbp;
+  const open = () => dbp ||= new Promise((res, rej) => {
+    const r = indexedDB.open("paris-tickets", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("tickets", {keyPath:"id", autoIncrement:true});
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction("tickets", mode); const out = fn(t.objectStore("tickets")); t.oncomplete = () => res(out.result ?? out); t.onerror = () => rej(t.error); }); };
+  return {
+    add: rec => tx("readwrite", s => s.add(rec)),
+    put: rec => tx("readwrite", s => s.put(rec)),
+    all: () => tx("readonly", s => s.getAll()),
+    get: id => tx("readonly", s => s.get(id)),
+    del: id => tx("readwrite", s => s.delete(id)),
+    clear: () => tx("readwrite", s => s.clear()),
+  };
+})();
+let ticketsUnlocked = false;
+async function hashPin(pin, salt){
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(salt + ":" + pin));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join("");
+}
+function loadScript(src){
+  return new Promise((res, rej) => {
+    if(document.querySelector(`script[src="${src}"]`)) return res();
+    const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.append(s);
+  });
+}
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const canvasBlob = c => new Promise(r => c.toBlob(r, "image/jpeg", 0.92));
+// Turns each PDF page into a sharp image so barcodes scan from the screen.
+async function pdfToTickets(file){
+  await loadScript(PDFJS + "pdf.min.js");
+  pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js";
+  const pdf = await pdfjsLib.getDocument({data: await file.arrayBuffer()}).promise;
+  const base = file.name.replace(/\.pdf$/i, ""), out = [];
+  for(let i = 1; i <= pdf.numPages; i++){
+    const page = await pdf.getPage(i);
+    const vp = page.getViewport({scale: 1700 / page.getViewport({scale:1}).width});
+    const c = document.createElement("canvas"); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+    await page.render({canvasContext: ctx, viewport: vp}).promise;
+    let name = pdf.numPages > 1 ? `${base} · ${i} of ${pdf.numPages}` : base;
+    try{
+      const txt = (await page.getTextContent()).items.map(t => t.str).join(" ");
+      const num = txt.match(/(?:ticket number|num[ée]ro de billet)[^0-9]{0,40}(\d{5,})/i);
+      if(num) name = `Ticket ${num[1]}`;
+    }catch{}
+    out.push({name, blob: await canvasBlob(c), t: Date.now()});
+  }
+  return out;
+}
+async function imageToTicket(file){
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return {name: file.name.replace(/\.[a-z0-9]+$/i, ""), blob: await canvasBlob(c), t: Date.now()};
+}
+async function renderTickets(){
+  const box = document.getElementById("tk-list"); if(!box) return;
+  let items = [];
+  try{ items = await ticketDB.all(); }catch{}
+  box.querySelectorAll("img").forEach(i => URL.revokeObjectURL(i.src));
+  box.innerHTML = items.length ? items.map(tk => `<div class="card tk">
+      <button class="prev" data-tk="${tk.id}" aria-label="Show ticket full screen"><img alt="" src="${URL.createObjectURL(tk.blob)}"></button>
+      <div class="tk-row"><input value="${esc(tk.name)}" data-tkname="${tk.id}" aria-label="Ticket name"><button class="rm" data-tkdel="${tk.id}" aria-label="Delete ticket">×</button></div>
+    </div>`).join("")
+    : `<div class="empty"><strong>No tickets yet</strong>Add the PDF or a screenshot of your tickets.</div>`;
+}
+async function openTicket(id){
+  const tk = await ticketDB.get(id); if(!tk) return;
+  const v = document.createElement("div"); v.className = "viewer light";
+  v.innerHTML = `<div class="vbtns"><button class="btn" data-vclose>Close</button><button class="btn" data-vzoom>Bigger</button></div><div class="vscroll"><img alt="${esc(tk.name)}" src="${URL.createObjectURL(tk.blob)}"></div>`;
+  document.body.append(v);
+  let lock = null;
+  try{ lock = await navigator.wakeLock?.request("screen"); }catch{}
+  let zoom = 1;
+  v.addEventListener("click", ev => {
+    const z = ev.target.closest("[data-vzoom]");
+    if(z){ zoom = zoom >= 3 ? 1 : zoom + 1; v.querySelector(".vscroll img").style.width = (zoom*100) + "%"; z.textContent = zoom >= 3 ? "Fit screen" : "Bigger";
+      const sc = v.querySelector(".vscroll"); sc.scrollLeft = sc.scrollWidth; sc.scrollTop = 0; return; }
+    if(ev.target.closest("[data-vclose]")){ lock?.release?.(); URL.revokeObjectURL(v.querySelector("img").src); v.remove(); } });
+}
+
 /* ================= shared pieces ================= */
 const searchIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`;
 function header(title, back){
@@ -496,8 +607,15 @@ function header(title, back){
   <h1 class="title">${esc(title)}</h1>
   <div class="searchrow"><label class="pill">${searchIcon}<input id="q" type="search" placeholder="Search macarons, ramen, rooftop…" value="${esc(state.q)}" autocomplete="off" enterkeyhint="search"></label></div>`;
 }
+// "€20–30 per person" → "€20–30"; "Free" stays; long entry prices are left out of rows.
+function shortPrice(p){
+  if(!p.price) return "";
+  if(p.price === "Free") return "Free";
+  const m = p.price.match(/^(From )?€[\d.,]+(?:–[\d.,]+)?/);
+  return m ? m[0] : "";
+}
 function placeRow(p){
-  const d = distLabel(p), meta = [p.area, d].filter(Boolean).join(" · ");
+  const d = distLabel(p), meta = [p.area, shortPrice(p), d].filter(Boolean).join(" · ");
   const chip = isBooked(p) ? `<span class="chip booked">Booked</span>` : isToBook(p) ? `<span class="chip">To book</span>` : p.status==="maybe" ? `<span class="chip">Maybe</span>` : p.status==="skip" ? `<span class="chip">Skip</span>` : "";
   return `<button class="row ${visited.has(p.id)?"done":""}" data-place="${esc(p.id)}">
     <span class="swatch" style="--c:${catColor(p.cat)}"></span>
@@ -663,7 +781,10 @@ function viewCal(){
   const w = weather[state.day];
   const toBook = PLACES.filter(isToBook);
   const note = (typeof DAY_NOTES !== "undefined" && DAY_NOTES[state.day]) || "";
-  return header("Plan") + `<div class="days">${strip}</div>
+  return header("Plan") + `<button class="card" data-goto="tickets" style="width:100%;flex-direction:row;align-items:center;text-align:left;margin-bottom:16px">
+      <span class="hotel-ic"><svg viewBox="0 0 100 100" width="30" height="30" aria-hidden="true">${ARTS.do}</svg></span><span style="flex:1;min-width:0"><span class="name" style="display:block">Our tickets</span><span class="meta" style="display:block">Saved on this phone · PIN locked</span></span><span class="muted" style="font-size:22px">›</span>
+    </button>
+    <div class="days">${strip}</div>
     <div class="section-h" style="margin-top:0"><h2>${esc(fmtDay(state.day,{weekday:"long",day:"numeric",month:"long"}))}</h2></div>
     <div class="dayinfo">
       ${w ? `<span class="chip">${esc(wxText(w.code))} · ${w.max}° / ${w.min}°</span>${w.rain != null ? `<span class="chip">Rain ${w.rain}%</span>` : ""}` : ""}
@@ -693,6 +814,28 @@ function viewInfo(){
     ${sec("sos","Emergency","eat", sos)}
   </div>`;
 }
+function viewTickets(){
+  const pin = store.get("pin", null);
+  let body;
+  if(!pin) body = `<div class="card">
+      <div><div class="name">Choose a PIN</div><div class="meta">Tickets are saved only on this phone and never uploaded. The PIN locks them.</div></div>
+      <input id="pin1" class="pinput" type="password" inputmode="numeric" autocomplete="new-password" placeholder="••••" aria-label="New PIN">
+      <button class="btn primary" data-act="setpin">Set PIN</button>
+    </div>`;
+  else if(!ticketsUnlocked) body = `<div class="card">
+      <div><div class="name">Tickets are locked</div><div class="meta">Enter your PIN to see them.</div></div>
+      <input id="pin2" class="pinput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••" aria-label="PIN">
+      <button class="btn primary" data-act="unlock">Unlock</button>
+      <button class="btn small" data-act="forgotpin">Forgot PIN?</button>
+    </div>`;
+  else body = `<div class="tk-actions">
+      <label class="btn primary" for="tk-add">Add tickets (PDF or photo)</label><input id="tk-add" type="file" accept="application/pdf,image/*" multiple hidden>
+      <button class="btn" data-act="lock">Lock</button>
+    </div>
+    <div class="list" id="tk-list"><div class="empty">Loading…</div></div>
+    <p class="meta muted" style="font-family:var(--mono);font-size:12px;margin-top:14px">Saved only on this phone, never uploaded. At the entrance, tap a ticket and turn your screen brightness up.</p>`;
+  return header("Our tickets", true) + body;
+}
 function viewSearch(){
   const q = stem(state.q);
   const hit = p => norm([p.name,p.area,p.address,p.notes,CATS[p.cat]?.label,...(p.order||[]),...(p.drinks||[]),...(p.tags||[])].join(" | ")).includes(q);
@@ -707,17 +850,19 @@ function viewSearch(){
 /* ================= render ================= */
 function render(keepFocus){
   const v = state.q.trim() ? "search" : state.view;
-  const html = {home:viewHome, cat:viewCat, coll:viewColl, near:viewNear, map:viewMap, cal:viewCal, info:viewInfo, search:viewSearch}[v]();
+  const html = {home:viewHome, cat:viewCat, coll:viewColl, near:viewNear, map:viewMap, cal:viewCal, info:viewInfo, tickets:viewTickets, search:viewSearch}[v]();
   if(map){ map.remove(); map = null; }
   $("#app").innerHTML = html;
-  const tab = ["cat","coll"].includes(state.view) ? "home" : state.view;
+  const tab = ["cat","coll"].includes(state.view) ? "home" : state.view === "tickets" ? "cal" : state.view;
   document.querySelectorAll(".tabbar button").forEach(b => b.dataset.view === tab ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
   if(v === "map") initMap();
+  if(v === "tickets" && ticketsUnlocked) renderTickets();
   if(keepFocus){ const i=$("#q"); i.focus(); i.setSelectionRange(i.value.length,i.value.length); }
 }
 function go(view){
+  if(view !== "tickets") ticketsUnlocked = false;   // lock again when leaving the tickets screen
   state.view = view; state.q = "";
-  if(!["cat","coll"].includes(view)) store.set("view", view);
+  if(!["cat","coll","tickets"].includes(view)) store.set("view", view);
   render(); window.scrollTo(0,0);
 }
 
@@ -740,8 +885,9 @@ function initMap(){
 }
 
 /* ================= sheets ================= */
-function openSheet(html){
+function openSheet(html, color){
   const s=$("#sheet"), sc=$("#scrim");
+  s.style.setProperty("--c", color || "var(--muted)");
   s.innerHTML = `<div class="grab"></div>` + html; s.scrollTop = 0;
   s.hidden = sc.hidden = false;
   requestAnimationFrame(()=>{ s.classList.add("show"); sc.classList.add("show"); });
@@ -781,10 +927,10 @@ function openPlace(id){
       <button class="toggle" role="switch" aria-checked="${bookedByUs.has(id)}" data-booked="${esc(id)}"><span>We booked it</span><span class="switch"></span></button>
     </div>` : "";
   openSheet(`
-    <div class="hero" style="--c:${catColor(p.cat)}">
+    <div class="hero">
       <span class="label">${esc(CATS[p.cat]?.label || "")}${p.area?" · "+esc(p.area):""}</span>
       <h3>${esc(p.name)}</h3>
-      <div class="heromet">${st ? statusChip(p) : ""}${distLabel(p) ? `<span class="chip">${esc(distLabel(p))}</span>` : ""}${p.price ? `<span class="chip">${esc(p.price)}</span>` : ""}${visited.has(id) ? `<span class="chip open">Been here</span>` : ""}</div>
+      <div class="heromet">${st ? statusChip(p) : ""}${distLabel(p) ? `<span class="chip">${esc(distLabel(p))}</span>` : ""}${shortPrice(p) ? `<span class="chip">${esc(shortPrice(p))}</span>` : ""}${visited.has(id) ? `<span class="chip open">Been here</span>` : ""}</div>
     </div>
     <div class="content">
       ${dirLinks(p)}
@@ -793,7 +939,8 @@ function openPlace(id){
       ${list("What to drink", p.drinks)}
       ${text("Good to know", p.notes)}
       ${text("Best time", p.bestTime)}
-      ${text("Opening hours", p.hours)}
+      ${p.price ? `<div class="block"><h4>${["go","do","shop"].includes(p.cat) ? "Entry" : "Average bill"}</h4><p>${esc(p.price)}</p>${["go","do","shop"].includes(p.cat) || p.price === "Free" ? "" : `<p class="muted" style="font-size:13px;margin-top:4px">Estimate. Prices on the menu may differ.</p>`}</div>` : ""}
+      ${p.hours ? `<div class="block"><h4>Opening hours</h4><p>${esc(p.hours)}</p>${p.hoursSource === "osm" ? `<p class="muted" style="font-size:13px;margin-top:4px">From OpenStreetMap. Hours can change, so check before a special trip.</p>` : ""}</div>` : ""}
       ${bookBlock}
       ${text("Address", p.address)}
       ${p.link ? `<a class="btn" target="_blank" rel="noopener" href="${esc(p.link)}">Open website</a>` : ""}
@@ -801,14 +948,14 @@ function openPlace(id){
       <div class="block"><h4>Our notes</h4><textarea id="note-${esc(id)}" data-note="${esc(id)}" placeholder="What we thought, what to order next time…">${esc(notes[id]||"")}</textarea></div>
       <div class="block"><h4>Our photos</h4><div class="photos" id="photos-${esc(id)}"></div></div>
       <button class="toggle" role="switch" aria-checked="${visited.has(id)}" data-visit="${esc(id)}"><span>We've been here</span><span class="switch"></span></button>
-    </div>`);
+    </div>`, catColor(p.cat));
   renderPhotos(id);
 }
 function openEvent(id){
   const e = EVENTS.find(x=>x.id===id); if(!e) return;
   const p = e.placeId && placeById(e.placeId);
   openSheet(`
-    <div class="hero" style="--c:${p?catColor(p.cat):"var(--muted)"}">
+    <div class="hero">
       <span class="label">${esc(fmtDay(e.date,{weekday:"long",day:"numeric",month:"long"}))}</span>
       <h3>${esc(e.title)}</h3>
       <div class="heromet"><span class="chip ${e.booked?"booked":""}">${e.booked?"Booked":"Planned"}</span>${e.start ? `<span class="chip">${esc(e.start + (e.end?" – "+e.end:""))}</span>` : ""}</div>
@@ -818,8 +965,9 @@ function openEvent(id){
       ${e.details && e.details.length ? `<div class="block"><h4>Details</h4><div class="card" style="gap:0;padding:4px 14px">${e.details.map(([k,v],i)=>`<div class="planned" style="${i?"":"border-top:0"}"><span class="muted">${esc(k)}</span><span style="text-align:right">${esc(v)}</span></div>`).join("")}</div></div>` : ""}
       ${e.confirmation ? `<div class="block"><h4>Confirmation</h4><div class="copy"><span>${esc(e.confirmation)}</span><button class="chip" data-copy="${esc(e.confirmation)}">Copy</button></div></div>` : ""}
       ${e.notes ? `<div class="block"><h4>Notes</h4><p>${esc(e.notes)}</p></div>` : ""}
+      ${e.booked ? `<button class="btn" data-goto="tickets">Show our tickets</button>` : ""}
       ${p ? `<button class="row" data-place="${esc(p.id)}"><span class="swatch" style="--c:${catColor(p.cat)}"></span><span class="body"><div class="name">${esc(p.name)}</div><div class="meta">Open place</div></span></button>` : ""}
-    </div>`);
+    </div>`, p ? catColor(p.cat) : "var(--do)");
 }
 function openMenu(){
   if($("#menu")) return $("#menu").remove();
@@ -877,12 +1025,59 @@ document.addEventListener("click", ev => {
   if(d.act==="menu") return openMenu();
   if(d.act==="opennow"){ state.openNow = !state.openNow; return render(); }
   if(d.act==="reset-visited"){ visited.clear(); store.set("visited",[]); $("#menu")?.remove(); toast("Cleared"); return render(); }
-  if(d.act==="back"){ if(state.q){ state.q = ""; return render(); } return go("home"); }
+  if(d.act==="back"){ if(state.q){ state.q = ""; return render(); } return go(state.view === "tickets" ? "cal" : "home"); }
+  if(d.act==="setpin") return setPin();
+  if(d.act==="unlock") return unlockTickets();
+  if(d.act==="lock"){ ticketsUnlocked = false; return render(); }
+  if(d.act==="forgotpin"){
+    if(!t.dataset.armed){ t.dataset.armed = "1"; t.textContent = "Tap again to delete all tickets on this phone and reset the PIN"; return; }
+    ticketDB.clear().catch(()=>{}); store.set("pin", null); try{ localStorage.removeItem("paris:pin"); }catch{} ticketsUnlocked = false; toast("Tickets removed. Choose a new PIN."); return render();
+  }
+  if(d.tk) return openTicket(+d.tk);
+  if(d.tkdel){
+    if(!t.dataset.armed){ t.dataset.armed = "1"; toast("Tap × again to delete this ticket"); return; }
+    return ticketDB.del(+d.tkdel).then(() => { toast("Ticket deleted"); renderTickets(); });
+  }
   if(d.act==="locate") return locate(()=>render());
   if(d.act==="hotel-map"){ map && map.setView([TRIP.stay.lat,TRIP.stay.lng],16); return; }
   if(d.act==="locate-map") return locate(()=>{ render(); map && map.setView([me.lat,me.lng],15); });
 });
+async function setPin(){
+  const v = ($("#pin1")?.value || "").trim();
+  if(v.length < 4) return toast("Use at least 4 digits");
+  const salt = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2,"0")).join("");
+  store.set("pin", {salt, hash: await hashPin(v, salt)});
+  ticketsUnlocked = true; toast("PIN set"); render();
+}
+async function unlockTickets(){
+  const pin = store.get("pin", null), v = ($("#pin2")?.value || "").trim();
+  if(pin && await hashPin(v, pin.salt) === pin.hash){ ticketsUnlocked = true; render(); }
+  else { toast("Wrong PIN"); const i = $("#pin2"); if(i){ i.value = ""; i.focus(); } }
+}
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter") return;
+  if(e.target.id === "pin1") setPin();
+  if(e.target.id === "pin2") unlockTickets();
+});
 document.addEventListener("change", async ev => {
+  if(ev.target.id === "tk-add"){
+    const files = [...ev.target.files]; if(!files.length) return;
+    toast("Adding tickets…");
+    let n = 0;
+    for(const f of files){
+      try{
+        const recs = /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name) ? await pdfToTickets(f) : [await imageToTicket(f)];
+        for(const r of recs){ await ticketDB.add(r); n++; }
+      }catch{ toast(`Couldn't read ${f.name}`); }
+    }
+    if(n) toast(`${n} ${n === 1 ? "ticket" : "tickets"} saved on this phone`);
+    ev.target.value = ""; return renderTickets();
+  }
+  if(ev.target.dataset.tkname){
+    const tk = await ticketDB.get(+ev.target.dataset.tkname);
+    if(tk){ tk.name = ev.target.value.trim() || tk.name; await ticketDB.put(tk); toast("Renamed"); }
+    return;
+  }
   const id = ev.target.dataset.addphoto; if(!id || !ev.target.files[0]) return;
   try{ await photoDB.add(id, await shrink(ev.target.files[0])); renderPhotos(id); toast("Photo saved on this phone"); }
   catch{ toast("Couldn't save that photo"); }

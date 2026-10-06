@@ -1,0 +1,392 @@
+{
+ "chartier-grands-boulevards": {
+  "osm_name": "Bouillon Chartier",
+  "opening_hours": "Mo-Su 11:30-00:00",
+  "m": 15
+ },
+ "chartier-montparnasse": {
+  "osm_name": "Café Montparnasse",
+  "opening_hours": "Mo-Su 07:30-02:00",
+  "m": 76
+ },
+ "chartier-gare-de-lest": {
+  "osm_name": "Bouillon Chartier",
+  "opening_hours": "Mo-Su 11:30-00:00",
+  "m": 23
+ },
+ "les-philosophes": {
+  "osm_name": "Les Philosophes",
+  "opening_hours": "We-Su 09:00-02:00",
+  "m": 69
+ },
+ "relais-entrecote": {
+  "osm_name": "Le Relais de l'Entrecôte",
+  "opening_hours": "Mo-Su 11:45-14:30, 19:00-23:30",
+  "m": 43
+ },
+ "au-pied-de-cochon": {
+  "osm_name": "Au Pied de Cochon",
+  "opening_hours": "24/7",
+  "m": 10
+ },
+ "bouillon-julien": {
+  "osm_name": "Bouillon Julien",
+  "opening_hours": "Mo-Su 11:45-24:00",
+  "m": 62
+ },
+ "bouillon-pigalle": {
+  "osm_name": "ELAN - relais Pigalle 2",
+  "opening_hours": "Mo-Sa 08:00-23:00; Su 10:00-17:00",
+  "m": 71
+ },
+ "train-bleu": {
+  "osm_name": "Le Train Bleu",
+  "opening_hours": "Mo-Su 11:15-14:30, 19:00-22:30",
+  "m": 25
+ },
+ "breizh-cafe": {
+  "osm_name": "Breizh Café",
+  "opening_hours": "Mo-Fr 11:30-23:00; Sa 10:00-23:00; Su 10:00-22:00",
+  "m": 95
+ },
+ "as-du-fallafel": {
+  "osm_name": "L'As du Fallafel",
+  "opening_hours": "Mo-Th 11:00-24:00; Fr 11:00-17:00; Su 11:00-24:00",
+  "m": 3
+ },
+ "higuma": {
+  "osm_name": "Higuma",
+  "opening_hours": "11:30-22:00",
+  "m": 23
+ },
+ "kunitoraya": {
+  "osm_name": "Kunitoraya - Restaurant",
+  "opening_hours": "Mo-Sa 19:30-20:00",
+  "m": 60
+ },
+ "sanukiya": {
+  "osm_name": "Sanukiya",
+  "opening_hours": "Mo-Su 11:30-22:30",
+  "m": 57
+ },
+ "dosanko-larmen": {
+  "osm_name": "Dosanko Larmen",
+  "opening_hours": "Mo-Fr 12:00-15:00,17:00-22:30; Sa,Su 12:00-15:30,18:00-22:30",
+  "m": 67
+ },
+ "little-red-door": {
+  "osm_name": "Little Red Door",
+  "opening_hours": "Mo-Su 17:00-01:00",
+  "m": 52
+ },
+ "candelaria": {
+  "osm_name": "Candelaria",
+  "opening_hours": "Su-We 12:30-23:00; Th-Sa 12:30-24:00",
+  "m": 42
+ },
+ "danico": {
+  "osm_name": "Danico",
+  "opening_hours": "Mo-Su 17:00-02:00",
+  "m": 59
+ },
+ "cafe-de-flore": {
+  "osm_name": "Café de Flore",
+  "opening_hours": "Mo-Su 07:30-01:30",
+  "m": 11
+ },
+ "deux-magots": {
+  "osm_name": "Les Deux Magots",
+  "opening_hours": "Mo-Su 07:30-01:00",
+  "m": 19
+ },
+ "kitsune-palais-royal": {
+  "osm_name": "Jardin du Palais Royal",
+  "opening_hours": "Mo-Su 08:00-22:30",
+  "m": 50
+ },
+ "cafe-marly": {
+  "osm_name": "Le Café Marly",
+  "opening_hours": "Mo-Su 08:00-02:00",
+  "m": 18
+ },
+ "cafeotheque": {
+  "osm_name": "Caféothèque de Paris",
+  "opening_hours": "Mo-Su 09:30-19:00",
+  "m": 81
+ },
+ "shakespeare-cafe": {
+  "osm_name": "Shakespeare and Company",
+  "opening_hours": "Mo-Su 10:00-23:00",
+  "m": 3
+ },
+ "carette": {
+  "osm_name": "Carette",
+  "opening_hours": "Mo-Su 07:30-24:00",
+  "m": 47
+ },
+ "laduree-champs": {
+  "osm_name": "Ladurée",
+  "opening_hours": "Mo-Su 08:00-22:00",
+  "m": 32
+ },
+ "pierre-herme-bonaparte": {
+  "osm_name": "Pierre Hermé",
+  "opening_hours": "Mo-Sa 10:00-20:00; Su 10:00-19:00",
+  "m": 16
+ },
+ "stohrer": {
+  "osm_name": "Stohrer",
+  "opening_hours": "Mo-Fr 08:00-20:30; Su 08:00-20:00; PH closed",
+  "m": 41
+ },
+ "cedric-grolet-opera": {
+  "osm_name": "Cédric Grolet Opéra",
+  "opening_hours": "We-Su 08:30-18:00",
+  "m": 9
+ },
+ "mamiche": {
+  "osm_name": "Mamiche",
+  "opening_hours": "Mo-Fr 08:00-20:00, Sa 08:00-19:00",
+  "m": 75
+ },
+ "odette": {
+  "osm_name": "Odette",
+  "opening_hours": "Mo, Th, Fr 11:00-19:00; Sa, Su 11:00-20:00; Tu, We 12:00-19:00",
+  "m": 41
+ },
+ "du-pain-et-des-idees": {
+  "osm_name": "Copains Le Studio",
+  "opening_hours": "Mo-Fr 08:00-19:00; Sa 08:00-19:30; Su 09:00-19:00",
+  "m": 48
+ },
+ "la-bonne-brosse": {
+  "osm_name": "La Bonne Brosse",
+  "opening_hours": "Tu-Sa 11:00-19:00",
+  "m": 75
+ },
+ "dehillerin": {
+  "osm_name": "E. Dehillerin",
+  "opening_hours": "Mo 09:00-12:30,14:00-18:00; Tu-Fr 09:00-19:00; Sa 09:00-18:00",
+  "m": 43
+ },
+ "shakespeare-books": {
+  "osm_name": "Shakespeare and Company",
+  "opening_hours": "Mo-Su 10:00-23:00",
+  "m": 3
+ },
+ "louvre": {
+  "osm_name": "Musée du Louvre",
+  "opening_hours": "Mo,Th,Sa-Su 09:00-18:00; Tu off; We,Fr 09:00-21:00; Jan 01,May 01,Dec 25 off",
+  "m": 7
+ },
+ "versailles": {
+  "osm_name": "Château de Versailles",
+  "opening_hours": "Tu-Su 09:00-18:30",
+  "m": 13
+ },
+ "orsay": {
+  "osm_name": "Musée d'Orsay",
+  "opening_hours": "Tu-Su 09:30-18:00; Th 09:30-21:45",
+  "m": 11
+ },
+ "eiffel-tower": {
+  "osm_name": "Tour Eiffel",
+  "opening_hours": "09:30-23:45; Jun 21-Sep 02: 09:00-00:45; Jul 14,Jul 15 off",
+  "m": 16
+ },
+ "sacre-coeur": {
+  "osm_name": "Basilique du Sacré-Cœur",
+  "opening_hours": "06:00-22:30",
+  "m": 12
+ },
+ "notre-dame": {
+  "osm_name": "Cathédrale Notre-Dame de Paris",
+  "opening_hours": "Mo,Tu,We,Fr 07:50-19:00; Th 07:50-22:00; Sa,Su 08:15-19:30",
+  "m": 7
+ },
+ "sainte-chapelle": {
+  "osm_name": "Sainte-Chapelle",
+  "opening_hours": "Jan-Mar 09:00-17:00; Apr-Sep 09:00-19:00; Oct-Dec 09:00-17:00",
+  "m": 1
+ },
+ "arc-de-triomphe": {
+  "osm_name": "Arc de Triomphe",
+  "opening_hours": "Apr 02-Jan 31: Mo-Su 10:00-22:30; Apr 01,Sep 30: Mo-Su 10:00-23:00; Oct 01,Dec 31: Mo-Su 10:00-22:30; Jan 01,May 01,May 08,Jul 14,Nov 11,Dec 25: off",
+  "m": 4
+ },
+ "pont-alexandre-iii": {
+  "osm_name": "Pont Alexandre III",
+  "opening_hours": "Mo-Su 06:00-22:00",
+  "m": 99
+ },
+ "palais-garnier": {
+  "osm_name": "Opéra Garnier",
+  "opening_hours": "10:00-17:00",
+  "m": 10
+ },
+ "galeries-lafayette": {
+  "osm_name": "Galeries Lafayette",
+  "opening_hours": "Mo-Sa 10:00-20:30; Su 11:00-20:00",
+  "m": 22
+ },
+ "orangerie": {
+  "osm_name": "Musée de l'Orangerie",
+  "opening_hours": "Mo-Su 09:00-18:00; Tu off",
+  "m": 5
+ },
+ "tuileries": {
+  "osm_name": "Jardin des Tuileries",
+  "opening_hours": "Mo-Su 07:30-21:00",
+  "m": 62
+ },
+ "palais-royal": {
+  "osm_name": "Royal Pressing",
+  "opening_hours": "Mo-Fr 09:00-19:00, Sa 09:00-12:00",
+  "m": 138
+ },
+ "galerie-vivienne": {
+  "osm_name": "Galerie Vivienne",
+  "opening_hours": "Mo-Sa 08:30-20:30",
+  "m": 26
+ },
+ "passage-panoramas": {
+  "osm_name": "Passage des Panoramas",
+  "opening_hours": "Mo-Su 06:00-00:00",
+  "m": 17
+ },
+ "luxembourg": {
+  "osm_name": "Jardin du Luxembourg",
+  "opening_hours": "open \"check website https://www.senat.fr/visite/jardin/horaires.html\"; (sunset-00:30)-(sunrise-00:15) closed; Mar01-Sep30 (sunset-00:30)-07:30 closed",
+  "m": 84
+ },
+ "rue-cremieux": {
+  "osm_name": "Le Crémieux",
+  "opening_hours": "09:00-21:30",
+  "m": 61
+ },
+ "little-tokyo": {
+  "osm_name": "Sainte Anne Gallery",
+  "opening_hours": "We-Sa 11:00-18:00",
+  "m": 104
+ },
+ "belleville": {
+  "osm_name": "Le pop up de Belleville",
+  "opening_hours": "Sa 10:00-19:00",
+  "m": 77
+ },
+ "parc-de-belleville": {
+  "osm_name": "Parc de Belleville",
+  "opening_hours": "Mo-Fr 08:00-19:00; Sa-Su 09:00-19:00; Mar 27-Apr 30 Mo-Su 09:00-20:30",
+  "m": 62
+ },
+ "harrys-bar": {
+  "osm_name": "Harry's Bar",
+  "opening_hours": "Mo-Sa 12:00-02:00; Su 17:00-01:00",
+  "m": 73
+ },
+ "le-perchoir": {
+  "osm_name": "Saveurs des Antilles Ménilmontant",
+  "opening_hours": "Tu-Th 10:00-19:00; Fr,Sa 09:00-19:00",
+  "m": 116
+ },
+ "les-ombres": {
+  "osm_name": "Bar Les Ombres",
+  "opening_hours": "Mo-Su 12:00-23:00",
+  "m": 72
+ },
+ "baron-rouge": {
+  "osm_name": "Le Baron Rouge",
+  "opening_hours": "Mo 17:00-22:00; Tu-Fr 10:00-14:00,17:00-22:00; Sa 10:00-22:00; Su 10:00-16:00",
+  "m": 38
+ },
+ "frenchie-bar-a-vins": {
+  "osm_name": "L’Altro Frenchie",
+  "opening_hours": "Mo-Fr 12:00-14:30,19:00-22:30; Sa-Su 12:30-15:00,19:00-22:30",
+  "m": 6
+ },
+ "maison-rose": {
+  "osm_name": "La Maison Rose",
+  "opening_hours": "Mo-Su 11:00-22:30",
+  "m": 65
+ },
+ "deux-moulins": {
+  "osm_name": "Café des 2 Moulins",
+  "opening_hours": "Mo-Fr 07:30-02:00; Sa-Su 08:00-02:00",
+  "m": 25
+ },
+ "angelina": {
+  "osm_name": "Angelina",
+  "opening_hours": "Mo-Th 07:30-19:00; Fr 07:30-19:30; Sa-Su, PH 08:00-19:30",
+  "m": 9
+ },
+ "boot-cafe": {
+  "osm_name": "Boot Café",
+  "opening_hours": "Mo-Su 10:00-18:00",
+  "m": 63
+ },
+ "merci": {
+  "osm_name": "Merci",
+  "opening_hours": "Mo-We 10:30-19:30; Th-Fr 10:30-20:00; Sa 10:00-20:00; Su 10:00-19:30",
+  "m": 48
+ },
+ "enfants-rouges": {
+  "osm_name": "Marché couvert des Enfants Rouges",
+  "opening_hours": "Tu-Sa 08:30-20:30; Th 08:30-21:30; Su 08:30-17:00",
+  "m": 6
+ },
+ "moulin-rouge": {
+  "osm_name": "Café des 2 Moulins",
+  "opening_hours": "Mo-Fr 07:30-02:00; Sa-Su 08:00-02:00",
+  "m": 140
+ },
+ "la-parisienne": {
+  "osm_name": "La Parisienne",
+  "opening_hours": "Mo-Sa 07:00-20:00; Su 07:00-14:30",
+  "m": 34
+ },
+ "mille-et-un": {
+  "osm_name": "À la Mère de Famille",
+  "opening_hours": "Mo-Sa 10:00-19:30",
+  "m": 42
+ },
+ "rabineau": {
+  "osm_name": "Boulangerie Moderne",
+  "opening_hours": "Mo-Fr 07:00-20:00; Sa 08:00-15:00",
+  "m": 7
+ },
+ "utopie": {
+  "osm_name": "Utopie",
+  "opening_hours": "Tu-Su 07:00-20:00; 2026 Jul 20-2026 Aug 02 off",
+  "m": 120
+ },
+ "buly": {
+  "osm_name": "Officine Universelle Buly",
+  "opening_hours": "Mo-Su 10:00-18:00",
+  "m": 115
+ },
+ "samaritaine": {
+  "osm_name": "La Samaritaine",
+  "opening_hours": "Mo-Su 10:00-20:00",
+  "m": 41
+ },
+ "bon-marche": {
+  "osm_name": "Le Bon Marché",
+  "opening_hours": "Mo-We, Fr-Sa 10:00-20:00; Th 10:00-20:45; Su 11:00-20:00",
+  "m": 37
+ },
+ "grande-epicerie": {
+  "osm_name": "La Grande Épicerie de Paris",
+  "opening_hours": "Mo-Sa 08:30-21:00; Su 10:00-20:00",
+  "m": 83
+ },
+ "citypharma": {
+  "osm_name": "CityPharma",
+  "opening_hours": "Mo-Fr 08:30-21:00; Sa 09:00-21:00; Su off",
+  "m": 31
+ },
+ "diptyque": {
+  "osm_name": "Diptyque'",
+  "opening_hours": "Mo-Sa 10:00-19:00",
+  "m": 14
+ }
+}
